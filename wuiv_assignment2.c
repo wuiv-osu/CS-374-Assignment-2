@@ -10,6 +10,7 @@ struct movie {
   struct movie* next;
 };
 
+// Parse through csv line, copy and return a movie struct
 struct movie* createMovie(char* line) {
   struct movie* newMovie = malloc(sizeof(struct movie));
   char* token;
@@ -19,10 +20,27 @@ struct movie* createMovie(char* line) {
   token = strtok_r(rest, ",", &rest);
   newMovie->title = malloc(strlen(token) + 1);
   strcpy(newMovie->title, token);
+
+  // Year
+  token = strtok_r(NULL, ",", &rest);
+  newMovie->year = atoi(token);
+
+  // Lnaguages
+  token = strtok_r(NULL, ",", &rest);
+  newMovie->languages = malloc(strlen(token) + 1);
+  strcpy(newMovie->languages, token);
+
+  // Rating
+  token = strtok_r(NULL, "\n", &rest);
+  newMovie->rating = strtof(token, NULL);
+
+  newMovie->next = NULL;
+  return newMovie;
 }
 
+// Open csv, parse each movie and stores data in linked list
 void processMovieFile(char* filePath){
-  char* currLine = NULL;
+  char* currentLine = NULL;
   size_t len = 0;
   size_t nread;
   int count = 0;
@@ -33,22 +51,24 @@ void processMovieFile(char* filePath){
   
 
   // Skipping header
-  getline(&currLine, &len, movieFile);
+  getline(&currentLine, &len, movieFile);
 
-  while(nread = getline(&currLine, &len, movieFile) != -1){
-    struct movie* m = createMovie(currLine);
+  while((nread = getline(&currentLine, &len, movieFile)) != -1){
+    struct movie* newMovie = createMovie(currentLine);
     count++;
+
     if (head == NULL) {
-        head = m;
-        tail = m;
+        head = newMovie;
+        tail = newMovie;
     } else {
-        tail->next = m;
-        tail = m;
+        tail->next = newMovie;
+        tail = newMovie;
     }
   }
-  free(currLine);
+
+  free(currentLine);
   fclose(movieFile);
-  printf("Processed file %s and parsed data for %d movies\n\n", filePath);
+  printf("Processed file %s and parsed data for %d movies\n\n", filePath, count);
 }
 
 int main ( int argc, char **argv ){
@@ -61,3 +81,7 @@ int main ( int argc, char **argv ){
   processMovieFile(argv[1]);
   return EXIT_SUCCESS;
 }
+
+
+//compile:   gcc -o wuiv_assignment2 wuiv_assignment2.c
+//test line: ./wuiv_assignment2 movies_sample_1.csv 
