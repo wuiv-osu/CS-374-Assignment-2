@@ -11,7 +11,7 @@ struct movie {
 };
 
 // Parse through csv line, copy and return a movie struct
-struct movie* createMovie(char* line) {
+struct movie* createMovie(char* line){
   struct movie* newMovie = malloc(sizeof(struct movie));
   char* token;
   char* rest = line;
@@ -36,6 +36,25 @@ struct movie* createMovie(char* line) {
 
   newMovie->next = NULL;
   return newMovie;
+}
+
+// Display movies released in specific year
+void showMoviesByYear(struct movie* list, int year){
+  int matchfound = 0;
+
+  // If matching year is found while going through linked list, print and set match variable to 1 to prevent error message
+  while (list != NULL){
+    if (list->year == year){
+      printf("%s\n", list->title);
+      matchfound = 1;
+    }
+    list = list->next;
+  }
+
+  // Error message if no matches
+  if (!matchfound){
+    printf("No data about movies released in the year %d\n", year);
+  }
 }
 
 // Open csv, parse each movie and stores data in linked list
@@ -69,11 +88,35 @@ void processMovieFile(char* filePath){
   free(currentLine);
   fclose(movieFile);
   printf("Processed file %s and parsed data for %d movies\n\n", filePath, count);
+
+  //--------------------------------------------------------------------------
+  // Display menu for user
+
+  int userInput;
+
+  do{
+    printf("\n1. Shows movies released in the specified year\n");
+
+    printf("\nEnter a choice from 1 to 4: ");
+    scanf("%d", &userInput);
+
+    if (userInput == 1){
+      int year;
+      printf("Enter the year for which you want to see movies: ");
+      scanf("%d", &year);
+      showMoviesByYear(head, year);
+    }
+  } while (userInput != 4);
+
+
+
+
+
+
 }
 
 int main ( int argc, char **argv ){
-  if (argc < 2)
-  {
+  if (argc < 2){
       printf("You must provide the name of the file to process\n");
       printf("Example usage: ./movies movies.csv\n");
       return EXIT_FAILURE;
