@@ -57,6 +57,29 @@ void showMoviesByYear(struct movie* list, int year){
   }
 }
 
+// Prints the highest rated movies of each year in order of oldest to newest movie
+void showHighestRatedMovies(struct movie* list) {
+  // Stores pointers to each year 
+  struct movie* topRated[2022] = {NULL};
+
+  // Iterate each movie and stores it
+  while (list != NULL){
+    int inputYear = list->year;
+    // If it is first movie of that year, or movie is rated higher than other movie of same year, store it
+    if (topRated[inputYear] == NULL || list->rating > topRated[inputYear]->rating) {
+      topRated[inputYear] = list;
+    }
+    list = list->next;
+  }
+
+  // Prints movies in order. If NULL, theres no movie to print
+  for (int i = 1900; i <= 2021; i++) {
+    if (topRated[i] != NULL) {
+        printf("%d %.1f %s\n", topRated[i]->year, topRated[i]->rating, topRated[i]->title);
+    }
+  }
+}
+
 // Open csv, parse each movie and stores data in linked list
 void processMovieFile(char* filePath){
   char* currentLine = NULL;
@@ -96,6 +119,9 @@ void processMovieFile(char* filePath){
 
   do{
     printf("\n1. Shows movies released in the specified year\n");
+    printf("2. Show highest rated movie for each year\n");
+    printf("3. Show the title and year of release of all movies in a specific language\n");
+    printf("4. Exit from the program\n\n");
 
     printf("\nEnter a choice from 1 to 4: ");
     scanf("%d", &userInput);
@@ -105,7 +131,12 @@ void processMovieFile(char* filePath){
       printf("Enter the year for which you want to see movies: ");
       scanf("%d", &year);
       showMoviesByYear(head, year);
+
+    } else if (userInput == 2) {
+      showHighestRatedMovies(head);
     }
+
+
   } while (userInput != 4);
 
 
