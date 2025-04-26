@@ -83,30 +83,42 @@ void showHighestRatedMovies(struct movie* list) {
 void showMoviesByLanguage(struct movie* list, char* language) {
   int matchfound = 0;
 
-  // Iterates through 
-  while (list != NULL){
+  // Iterate through movie list
+  while (list != NULL) {
     char temp[256];
     strcpy(temp, list->languages);
 
-    // Remove brackets and semicolons
+    // Seperate languages with brackets and semicolons as delimiters 
     char* token = strtok(temp, "[];");
-
-    // Checks movie for language. If movie has language, print, stop, move to next language 
-    while (token != NULL){
+    
+    // Check movie's languages for input language for match
+    while (token != NULL) {
       if (strcmp(token, language) == 0) {
         printf("%d %s\n", list->year, list->title);
         matchfound = 1;
         break;
       }
-      token = strtok(NULL, "[;]");
+      // Get the next language a movie has
+      token = strtok(NULL, "[];");
     }
     list = list->next;
   }
 
+  // Error message if no matches
   if (!matchfound) {
     printf("No data about movies released in %s\n", language);
   }
+}
 
+// Free allocated memory of each movie in linked list
+void freeMovies(struct movie* list) {
+  while (list != NULL) {
+      struct movie* temp = list;
+      list = list->next;
+      free(temp->title);
+      free(temp->languages);
+      free(temp);
+  }
 }
 
 
@@ -125,6 +137,7 @@ void processMovieFile(char* filePath){
   // Skipping header
   getline(&currentLine, &len, movieFile);
 
+  // Copy each line and store into linked list
   while((nread = getline(&currentLine, &len, movieFile)) != -1){
     struct movie* newMovie = createMovie(currentLine);
     count++;
@@ -140,7 +153,7 @@ void processMovieFile(char* filePath){
 
   free(currentLine);
   fclose(movieFile);
-  printf("Processed file %s and parsed data for %d movies\n\n", filePath, count);
+  printf("Processed file %s and parsed data for %d movies\n", filePath, count);
 
   //--------------------------------------------------------------------------
   // Display menu for user
@@ -151,7 +164,7 @@ void processMovieFile(char* filePath){
     printf("\n1. Shows movies released in the specified year\n");
     printf("2. Show highest rated movie for each year\n");
     printf("3. Show the title and year of release of all movies in a specific language\n");
-    printf("4. Exit from the program\n\n");
+    printf("4. Exit from the program\n");
 
     printf("\nEnter a choice from 1 to 4: ");
     scanf("%d", &userInput);
@@ -170,9 +183,13 @@ void processMovieFile(char* filePath){
       printf("Enter the language for which you want to see movies: ");
       scanf("%s", language);
       showMoviesByLanguage(head, language);
+    } else if (userInput == 4){
+
+    } else{
+      printf("You entered an incorrect choice. Try again.\n");
     }
   } while (userInput != 4);
-
+  freeMovies(head);
 }
 
 int main ( int argc, char **argv ){
