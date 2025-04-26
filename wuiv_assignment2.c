@@ -80,7 +80,7 @@ void showHighestRatedMovies(struct movie* list) {
   }
 }
 
-void showMoviesByLanguage(struct movie* list, char* language) {
+void showMoviesByLanguage(struct movie* list, char* language){
   int matchfound = 0;
 
   // Iterate through movie list
@@ -92,8 +92,8 @@ void showMoviesByLanguage(struct movie* list, char* language) {
     char* token = strtok(temp, "[];");
     
     // Check movie's languages for input language for match
-    while (token != NULL) {
-      if (strcmp(token, language) == 0) {
+    while (token != NULL){
+      if (strcmp(token, language) == 0){
         printf("%d %s\n", list->year, list->title);
         matchfound = 1;
         break;
@@ -111,8 +111,8 @@ void showMoviesByLanguage(struct movie* list, char* language) {
 }
 
 // Free allocated memory of each movie in linked list
-void freeMovies(struct movie* list) {
-  while (list != NULL) {
+void freeMovies(struct movie* list){
+  while (list != NULL){
       struct movie* temp = list;
       list = list->next;
       free(temp->title);
@@ -205,3 +205,4 @@ int main ( int argc, char **argv ){
 
 //compile:   gcc -o wuiv_assignment2 wuiv_assignment2.c
 //test line: ./wuiv_assignment2 movies_sample_1.csv 
+//Mem leak test: valgrind --leak-check=yes --show-reachable=yes ./wuiv_assignment2 movies_sample_1.csv
