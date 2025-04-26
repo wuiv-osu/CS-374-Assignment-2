@@ -80,6 +80,36 @@ void showHighestRatedMovies(struct movie* list) {
   }
 }
 
+void showMoviesByLanguage(struct movie* list, char* language) {
+  int matchfound = 0;
+
+  // Iterates through 
+  while (list != NULL){
+    char temp[256];
+    strcpy(temp, list->languages);
+
+    // Remove brackets and semicolons
+    char* token = strtok(temp, "[];");
+
+    // Checks movie for language. If movie has language, print, stop, move to next language 
+    while (token != NULL){
+      if (strcmp(token, language) == 0) {
+        printf("%d %s\n", list->year, list->title);
+        matchfound = 1;
+        break;
+      }
+      token = strtok(NULL, "[;]");
+    }
+    list = list->next;
+  }
+
+  if (!matchfound) {
+    printf("No data about movies released in %s\n", language);
+  }
+
+}
+
+
 // Open csv, parse each movie and stores data in linked list
 void processMovieFile(char* filePath){
   char* currentLine = NULL;
@@ -134,15 +164,14 @@ void processMovieFile(char* filePath){
 
     } else if (userInput == 2) {
       showHighestRatedMovies(head);
+
+    } else if (userInput == 3) {
+      char language[21];
+      printf("Enter the language for which you want to see movies: ");
+      scanf("%s", language);
+      showMoviesByLanguage(head, language);
     }
-
-
   } while (userInput != 4);
-
-
-
-
-
 
 }
 
